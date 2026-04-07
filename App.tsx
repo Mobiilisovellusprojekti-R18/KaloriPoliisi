@@ -8,6 +8,7 @@ import { auth } from './firebase/Config';
 import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import HomeScreen from './screens/HomeScreen';
+import ProfileScreen from './screens/ProfileScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -27,11 +28,18 @@ export default function App() {
       <Stack.Navigator>
         {/* JOS KÄYTTÄJÄ ON KIRJAUTUNUT: Näytetään vain Etusivu */}
         {user ? (
-          <Stack.Screen 
-            name="Home" 
-            component={HomeScreen} 
-            options={{ title: 'KaloriPoliisi' }} 
-          />
+          <>
+            <Stack.Screen
+              name="Home"
+              component={HomeScreen}
+              options={{ title: 'KaloriPoliisi' }}
+            />
+            <Stack.Screen
+              name="Profile"
+              component={ProfileScreen}
+              options={{ title: 'Profiili' }}
+            />
+          </>
         ) : (
           /* JOS EI OLE KIRJAUTUNUT: Näytetään Kirjautuminen ja Rekisteröityminen */
           <>

@@ -3,7 +3,7 @@ import { View, Text, Button, StyleSheet } from 'react-native';
 import { signOut } from 'firebase/auth';
 import { auth } from '../firebase/Config';
 
-const HomeScreen = () => {
+const HomeScreen = ({ navigation }: any) => {
 
   const handleLogout = async () => {
     try {
@@ -16,9 +16,19 @@ const HomeScreen = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Tervetuloa KaloriPoliisiin!</Text>
-      
+
+      <View style={styles.buttonContainer}>
+        <Button
+          title="Muokkaa profiilia"
+          onPress={() => navigation.navigate('Profile')}
+          color="#007AFF"
+        />
+      </View>
+
       {/* Tällä napilla saadaan myös "#3 Uloskirjautuminen" tehtyä valmiiksi! */}
-      <Button title="Kirjaudu ulos" onPress={handleLogout} color="red" />
+      <View style={styles.buttonContainer}>
+        <Button title="Kirjaudu ulos" onPress={handleLogout} color="red" />
+      </View>
     </View>
   );
 };
@@ -32,6 +42,10 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     marginBottom: 20,
+  },
+  buttonContainer: {
+    marginVertical: 10,
+    width: 200,
   }
 });
 
