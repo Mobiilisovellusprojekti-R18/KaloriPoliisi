@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert, ScrollView } from 'react-native';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
-import { updateEmail, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
+import { updateEmail } from 'firebase/auth';
 import { auth, firestore } from '../firebase/Config';
 
 interface UserProfile {
@@ -19,8 +19,6 @@ const ProfileScreen = ({ navigation }: any) => {
     weight: 0
   });
   const [loading, setLoading] = useState(false);
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
 
   useEffect(() => {
     fetchUserProfile();
@@ -60,33 +58,10 @@ const ProfileScreen = ({ navigation }: any) => {
 
       // Jos sähköposti on muuttunut, päivitetään se Firebase Authissa
       if (profile.email !== auth.currentUser.email) {
-        if (!currentPassword) {
-          Alert.alert('Virhe', 'Anna nykyinen salasana sähköpostin muuttamiseksi');
-          setLoading(false);
-          return;
-        }
-
-        const credential = EmailAuthProvider.credential(auth.currentUser.email!, currentPassword);
-        await reauthenticateWithCredential(auth.currentUser, credential);
         await updateEmail(auth.currentUser, profile.email);
       }
 
-      // Jos uusi salasana on annettu, päivitetään se
-      if (newPassword) {
-        if (!currentPassword) {
-          Alert.alert('Virhe', 'Anna nykyinen salasana salasanan muuttamiseksi');
-          setLoading(false);
-          return;
-        }
-
-        const credential = EmailAuthProvider.credential(auth.currentUser.email!, currentPassword);
-        await reauthenticateWithCredential(auth.currentUser, credential);
-        await updatePassword(auth.currentUser, newPassword);
-      }
-
       Alert.alert('Onnistui', 'Profiili päivitetty onnistuneesti!');
-      setCurrentPassword('');
-      setNewPassword('');
 
     } catch (error: any) {
       console.error('Virhe profiilin päivityksessä:', error);
@@ -134,26 +109,6 @@ const ProfileScreen = ({ navigation }: any) => {
         onChangeText={(text) => setProfile({...profile, weight: Number(text) || 0})}
         keyboardType="numeric"
         placeholder="Paino kilogrammoina"
-      />
-
-      <Text style={styles.sectionTitle}>Salasanan vaihto (valinnainen)</Text>
-
-      <Text style={styles.label}>Nykyinen salasana</Text>
-      <TextInput
-        style={styles.input}
-        value={currentPassword}
-        onChangeText={setCurrentPassword}
-        secureTextEntry
-        placeholder="Vaaditaan muutoksiin"
-      />
-
-      <Text style={styles.label}>Uusi salasana</Text>
-      <TextInput
-        style={styles.input}
-        value={newPassword}
-        onChangeText={setNewPassword}
-        secureTextEntry
-        placeholder="Jätä tyhjäksi jos et halua vaihtaa"
       />
 
       <View style={styles.buttonContainer}>
