@@ -1,5 +1,9 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore, Firestore } from "firebase/firestore";
+// Yksinkertaistetaan auth ilman persistence-asetuksia
+import { getAuth } from "firebase/auth";
+// Tuodaan uusi muistipaketti
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBjXx5TS0j20Wkq8xl_gJDqkIOChzpo_AY",
@@ -14,4 +18,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const firestore: Firestore = getFirestore(app);
 
-export { firestore };
+// Alustetaan Auth yksinkertaisesti
+const auth = getAuth(app);
+
+export { firestore, auth };
