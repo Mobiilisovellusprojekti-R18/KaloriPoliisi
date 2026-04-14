@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Alert, TouchableOpacity } from 'react-native';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { auth, firestore } from '../firebase/Config'; 
@@ -12,6 +12,8 @@ const RegisterScreen = ({ navigation }: any) => {
   const [height, setHeight] = useState('');
   const [weight, setWeight] = useState('');
   const [loading, setLoading] = useState(false);
+  const [gender, setGender] = useState("");
+  const [activity, setActivity] = useState(1.55);
 
   const handleRegister = async () => {
     if (!email || !password || !age || !height || !weight) {
@@ -29,6 +31,8 @@ const RegisterScreen = ({ navigation }: any) => {
         age: Number(age),
         height: Number(height),
         weight: Number(weight),
+        gender: gender,        
+        activity: activity,
         createdAt: new Date()
       });
 
@@ -84,20 +88,65 @@ const RegisterScreen = ({ navigation }: any) => {
         keyboardType="numeric"
       />
 
-      <Button 
-        title={loading ? "Ladataan..." : "Rekisteröidy"} 
-        onPress={handleRegister} 
-        disabled={loading} 
-      />
+      <Text style={{ marginBottom: 5 }}>Sukupuoli:</Text>
 
-      {/* TÄHÄN SE TULI! Tämä on uusi nappi, josta pääsee takaisin kirjautumiseen. */}
-      <View style={{ height: 20 }} />
-      <Button 
-  title="Onko sinulla jo tili? Kirjaudu" 
-  onPress={() => navigation.navigate('Login')} 
-  color="#888"
-/>
+      <View style={{ flexDirection: "row", marginBottom: 15 }}>
+        <TouchableOpacity
+          style={[styles.button,gender === "male" && styles.selected]}
+          onPress={() => setGender("male")}
+        >
+          <Text style={styles.buttonText}>Mies</Text>
+        </TouchableOpacity>
+        
+        <TouchableOpacity
+          style={[styles.button,gender === "female" && styles.selected]}
+          onPress={() => setGender("female")}
+        >
+          <Text style={styles.buttonText}>Nainen</Text>
+        </TouchableOpacity>
+      </View>
 
+      <Text style={{ marginBottom: 5 }}>Aktiivisuustaso:</Text>
+      
+      <TouchableOpacity
+        style={[styles.button, activity === 1.2 && styles.selected]}
+        onPress={() => setActivity(1.2)}
+      >
+        <Text style={styles.buttonText}>Vähän liikuntaa (0-2 krt/vko)</Text>
+      </TouchableOpacity>
+      
+      <TouchableOpacity
+        style={[styles.button, activity === 1.55 && styles.selected]}
+        onPress={() => setActivity(1.55)}
+      >
+        <Text style={styles.buttonText}>Normaali (2-4 krt/vko)</Text>
+      </TouchableOpacity>
+      
+      <TouchableOpacity
+        style={[styles.button, activity === 1.8 && styles.selected]}
+        onPress={() => setActivity(1.8)}
+      >
+        <Text style={styles.buttonText}>Aktiivinen (5-7 krt/vko)</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.registerButton}
+        onPress={handleRegister}
+        disabled={loading}
+      >
+        <Text style={styles.registerButtonText}>
+          {loading ? "Ladataan..." : "Rekisteröidy"}
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        onPress={() => navigation.navigate('Login')}
+        style={{ marginTop: 8 }}
+      >
+        <Text style={{ textAlign: "center", color: "#000" }}>
+          Onko sinulla jo tili? Kirjaudu tästä
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -106,7 +155,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     backgroundColor: '#fff',
   },
   title: {
@@ -117,11 +166,42 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
-    padding: 10,
-    marginBottom: 15,
+    borderColor: '#888',
+    padding: 8,
+    marginBottom: 10,
     borderRadius: 5,
   },
+  button: {
+    padding: 8,
+    backgroundColor: "#888",
+    borderRadius: 5,
+    marginRight: 8,
+    marginBottom: 8,
+    alignItems: "center",
+  },
+
+  selected: {
+    backgroundColor: "green",
+  },
+
+  buttonText: {
+    color: "white",
+    fontWeight: "bold",
+  },
+
+  registerButton: {
+    backgroundColor: "#007AFF",
+    padding: 15,
+    borderRadius: 8,
+    alignItems: "center",
+   marginTop: 10,
+  },
+
+  registerButtonText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
+  }
 });
 
 export default RegisterScreen;

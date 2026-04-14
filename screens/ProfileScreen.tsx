@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert, ScrollView } from 'react-native';
+import { useState, useEffect } from 'react';
+import { View, Text, TextInput, Button, StyleSheet, Alert, ScrollView, TouchableOpacity } from 'react-native';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
-import { updateEmail } from 'firebase/auth';
+import { updateEmail, signOut } from 'firebase/auth';
 import { auth, firestore } from '../firebase/Config';
 
 interface UserProfile {
@@ -9,6 +9,8 @@ interface UserProfile {
   age: number;
   height: number;
   weight: number;
+  gender: 'male' | 'female';
+  activity: number;
 }
 
 const ProfileScreen = ({ navigation }: any) => {
@@ -16,7 +18,9 @@ const ProfileScreen = ({ navigation }: any) => {
     email: '',
     age: 0,
     height: 0,
-    weight: 0
+    weight: 0,
+    gender: 'male',
+    activity: 1.55,
   });
   const [loading, setLoading] = useState(false);
 
@@ -35,7 +39,9 @@ const ProfileScreen = ({ navigation }: any) => {
           email: auth.currentUser.email || '',
           age: userData.age || 0,
           height: userData.height || 0,
-          weight: userData.weight || 0
+          weight: userData.weight || 0,
+          gender: userData.gender || 'male',
+          activity: userData.activity || 1.55,
         });
       }
     } catch (error) {
@@ -53,7 +59,9 @@ const ProfileScreen = ({ navigation }: any) => {
       await updateDoc(doc(firestore, 'users', auth.currentUser.uid), {
         age: profile.age,
         height: profile.height,
-        weight: profile.weight
+        weight: profile.weight,
+        gender: profile.gender,
+        activity: profile.activity,
       });
 
       // Jos sähköposti on muuttunut, päivitetään se Firebase Authissa
@@ -68,6 +76,15 @@ const ProfileScreen = ({ navigation }: any) => {
       Alert.alert('Virhe', error.message || 'Profiilin päivitys epäonnistui');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error('Uloskirjautuminen epäonnistui', error);
+      Alert.alert('Virhe', 'Uloskirjautuminen epäonnistui');
     }
   };
 
@@ -111,6 +128,48 @@ const ProfileScreen = ({ navigation }: any) => {
         placeholder="Paino kilogrammoina"
       />
 
+      <Text style={styles.label}>Sukupuoli</Text>
+      <View style={styles.row}>
+        <TouchableOpacity
+          style={[styles.selectButton, profile.gender === 'male' && styles.selected]}
+          onPress={() => setProfile({ ...profile, gender: 'male' })}
+        >
+          <Text style={styles.selectButtonText}>Mies</Text>
+        </TouchableOpacity>
+        
+        <TouchableOpacity
+          style={[styles.selectButton, profile.gender === 'female' && styles.selected]}
+          onPress={() => setProfile({ ...profile, gender: 'female' })}
+        >
+          <Text style={styles.selectButtonText}>Nainen</Text>
+        </TouchableOpacity>
+      </View>
+
+      <Text style={styles.label}>Aktiivisuustaso</Text>
+      <View style={styles.row}>
+        <TouchableOpacity
+          style={[styles.selectButton, profile.activity === 1.2 && styles.selected]}
+          onPress={() => setProfile({ ...profile, activity: 1.2 })}
+        >
+          <Text style={styles.selectButtonText}>Vähän</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.selectButton, profile.activity === 1.55 && styles.selected]}
+          onPress={() => setProfile({ ...profile, activity: 1.55 })}
+        >
+          <Text style={styles.selectButtonText}>Normaali</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.selectButton, profile.activity === 1.8 && styles.selected]}
+          onPress={() => setProfile({ ...profile, activity: 1.8 })}
+        >
+          <Text style={styles.selectButtonText}>Aktiivinen</Text>
+        </TouchableOpacity>
+      </View>
+
+
       <View style={styles.buttonContainer}>
         <Button
           title={loading ? "Päivitetään..." : "Tallenna muutokset"}
@@ -119,13 +178,14 @@ const ProfileScreen = ({ navigation }: any) => {
         />
       </View>
 
-      <View style={styles.buttonContainer}>
+      <View style={styles.buttonContainer}> 
         <Button
-          title="Takaisin"
-          onPress={() => navigation.goBack()}
-          color="#666"
+          title="Kirjaudu ulos"
+          onPress={handleLogout}
+          color="red"
         />
       </View>
+
     </ScrollView>
   );
 };
@@ -145,13 +205,13 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     fontWeight: 'bold',
-    marginTop: 15,
-    marginBottom: 5,
+    marginTop: 0,
+    marginBottom: 4,
   },
   input: {
     borderWidth: 1,
     borderColor: '#ddd',
-    padding: 10,
+    padding: 8,
     borderRadius: 5,
     fontSize: 16,
   },
@@ -163,8 +223,27 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   buttonContainer: {
-    marginTop: 20,
+    marginTop: 10,
     marginBottom: 10,
+  },
+  row: {
+  flexDirection: 'row',
+  flexWrap: 'wrap',
+  marginBottom: 10,
+  },
+  selectButton: {
+    padding: 10,
+    backgroundColor: '#ccc',
+    borderRadius: 6,
+    marginRight: 10,
+    marginBottom: 10,
+  },
+  selected: {
+    backgroundColor: 'green',
+  },
+  selectButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
   },
 });
 
