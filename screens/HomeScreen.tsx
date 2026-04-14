@@ -1,12 +1,13 @@
 import { useState, useCallback } from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { View, Text, Button, StyleSheet, TouchableOpacity } from 'react-native';
 import { auth, firestore } from '../firebase/Config';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, collection, getDocs, query, where } from 'firebase/firestore';
 import { useFocusEffect } from '@react-navigation/native';
 
 const HomeScreen = ({ navigation }: any) => {
 
   const [calories, setCalories] = useState<number | null>(null);
+  const [caloriesEaten, setCaloriesEaten] = useState(0);
 
   const calculateCalories = (
     weight: number,
@@ -25,30 +26,6 @@ const HomeScreen = ({ navigation }: any) => {
 
   return Math.round(bmr * activity);
 };
-
-const fetchUserData = async () => {
-  const user = auth.currentUser;
-  if (!user) return;
-
-  const docRef = doc(firestore, 'users', user.uid);
-  const docSnap = await getDoc(docRef);
-
-  if (docSnap.exists()) {
-    const data = docSnap.data();
-
-    const result = calculateCalories(
-      data.weight,
-      data.height,
-      data.age,
-      data.gender,
-      data.activity
-    );
-
-    setCalories(result);
-  }
-}
-
-  const caloriesEaten = 1800; // TESTIDATA, VOI POISTAA KUN KALORIEN LISÄYS TEHTY
 
   useFocusEffect(
     useCallback(() => {
@@ -73,6 +50,24 @@ const fetchUserData = async () => {
           
           setCalories(result);
         }
+        const today = new Date().toISOString().split('T')[0];
+
+        const q = query(
+          collection(firestore, 'dailyFoods'),
+          where('userId', '==', user.uid),
+          where('date', '==', today)
+        );
+
+        const querySnapshot = await getDocs(q);
+
+        let totalCalories = 0;
+
+        querySnapshot.forEach((doc) => {
+          const food = doc.data();
+          totalCalories += food.calories;
+        });
+
+        setCaloriesEaten(totalCalories);
       };
     
     fetchUserData();
@@ -100,6 +95,13 @@ const fetchUserData = async () => {
       ) : (
         <Text>Ladataan...</Text>
         )}
+
+         <TouchableOpacity
+        style={styles.addButton}
+        onPress={() => navigation.navigate('AddFood')}
+      >
+        <Text style={styles.addButtonText}>Lisää tuote</Text>
+      </TouchableOpacity>
 
         <View style={styles.buttonContainer}>
           <Button
@@ -162,6 +164,20 @@ const styles = StyleSheet.create({
     color: "#000",
     textAlign: "center",
     marginBottom: 5,
+  },
+  addButton: {
+    backgroundColor: '#00C853',
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    borderRadius: 10,
+    marginTop: 10,
+    width: 220,
+    alignItems: 'center',
+  },
+  addButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 

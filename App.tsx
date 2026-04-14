@@ -9,6 +9,7 @@ import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import HomeScreen from './screens/HomeScreen';
 import ProfileScreen from './screens/ProfileScreen';
+import AddFoodScreen from './screens/AddFoodScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -38,6 +39,11 @@ export default function App() {
               name="Profile"
               component={ProfileScreen}
               options={{ title: 'Profiili' }}
+            />
+            <Stack.Screen
+              name="AddFood"
+              component={AddFoodScreen}
+              options={{ title: 'Lisää tuote' }}
             />
           </>
         ) : (
