@@ -3,6 +3,7 @@ import { View, Text, TextInput, Button, StyleSheet, Alert, ScrollView, Touchable
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { updateEmail, signOut } from 'firebase/auth';
 import { auth, firestore } from '../firebase/Config';
+import BottomMenu from '../components/BottomMenu';
 
 interface UserProfile {
   email: string;
@@ -89,112 +90,116 @@ const ProfileScreen = ({ navigation }: any) => {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.title}>Muokkaa profiilia</Text>
+    <View style={styles.screenContainer}>
+      <ScrollView contentContainerStyle={styles.container}>
+        <Text style={styles.title}>Muokkaa profiilia</Text>
 
-      <Text style={styles.label}>Sähköposti</Text>
-      <TextInput
-        style={styles.input}
-        value={profile.email}
-        onChangeText={(text) => setProfile({...profile, email: text})}
-        autoCapitalize="none"
-        keyboardType="email-address"
-      />
-
-      <Text style={styles.label}>Ikä</Text>
-      <TextInput
-        style={styles.input}
-        value={profile.age.toString()}
-        onChangeText={(text) => setProfile({...profile, age: Number(text) || 0})}
-        keyboardType="numeric"
-        placeholder="Ikä vuosina"
-      />
-
-      <Text style={styles.label}>Pituus (cm)</Text>
-      <TextInput
-        style={styles.input}
-        value={profile.height.toString()}
-        onChangeText={(text) => setProfile({...profile, height: Number(text) || 0})}
-        keyboardType="numeric"
-        placeholder="Pituus senttimetreinä"
-      />
-
-      <Text style={styles.label}>Paino (kg)</Text>
-      <TextInput
-        style={styles.input}
-        value={profile.weight.toString()}
-        onChangeText={(text) => setProfile({...profile, weight: Number(text) || 0})}
-        keyboardType="numeric"
-        placeholder="Paino kilogrammoina"
-      />
-
-      <Text style={styles.label}>Sukupuoli</Text>
-      <View style={styles.row}>
-        <TouchableOpacity
-          style={[styles.selectButton, profile.gender === 'male' && styles.selected]}
-          onPress={() => setProfile({ ...profile, gender: 'male' })}
-        >
-          <Text style={styles.selectButtonText}>Mies</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity
-          style={[styles.selectButton, profile.gender === 'female' && styles.selected]}
-          onPress={() => setProfile({ ...profile, gender: 'female' })}
-        >
-          <Text style={styles.selectButtonText}>Nainen</Text>
-        </TouchableOpacity>
-      </View>
-
-      <Text style={styles.label}>Aktiivisuustaso</Text>
-      <View style={styles.row}>
-        <TouchableOpacity
-          style={[styles.selectButton, profile.activity === 1.2 && styles.selected]}
-          onPress={() => setProfile({ ...profile, activity: 1.2 })}
-        >
-          <Text style={styles.selectButtonText}>Vähän</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.selectButton, profile.activity === 1.55 && styles.selected]}
-          onPress={() => setProfile({ ...profile, activity: 1.55 })}
-        >
-          <Text style={styles.selectButtonText}>Normaali</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.selectButton, profile.activity === 1.8 && styles.selected]}
-          onPress={() => setProfile({ ...profile, activity: 1.8 })}
-        >
-          <Text style={styles.selectButtonText}>Aktiivinen</Text>
-        </TouchableOpacity>
-      </View>
-
-
-      <View style={styles.buttonContainer}>
-        <Button
-          title={loading ? "Päivitetään..." : "Tallenna muutokset"}
-          onPress={handleUpdateProfile}
-          disabled={loading}
+        <Text style={styles.label}>Sähköposti</Text>
+        <TextInput
+          style={styles.input}
+          value={profile.email}
+          onChangeText={(text) => setProfile({...profile, email: text})}
+          autoCapitalize="none"
+          keyboardType="email-address"
         />
-      </View>
 
-      <View style={styles.buttonContainer}> 
-        <Button
-          title="Kirjaudu ulos"
-          onPress={handleLogout}
-          color="red"
+        <Text style={styles.label}>Ikä</Text>
+        <TextInput
+          style={styles.input}
+          value={profile.age.toString()}
+          onChangeText={(text) => setProfile({...profile, age: Number(text) || 0})}
+          keyboardType="numeric"
+          placeholder="Ikä vuosina"
         />
-      </View>
 
-    </ScrollView>
+        <Text style={styles.label}>Pituus (cm)</Text>
+        <TextInput
+          style={styles.input}
+          value={profile.height.toString()}
+          onChangeText={(text) => setProfile({...profile, height: Number(text) || 0})}
+          keyboardType="numeric"
+          placeholder="Pituus senttimetreinä"
+        />
+
+        <Text style={styles.label}>Paino (kg)</Text>
+        <TextInput
+          style={styles.input}
+          value={profile.weight.toString()}
+          onChangeText={(text) => setProfile({...profile, weight: Number(text) || 0})}
+          keyboardType="numeric"
+          placeholder="Paino kilogrammoina"
+        />
+
+        <Text style={styles.label}>Sukupuoli</Text>
+        <View style={styles.row}>
+          <TouchableOpacity
+            style={[styles.selectButton, profile.gender === 'male' && styles.selected]}
+            onPress={() => setProfile({ ...profile, gender: 'male' })}
+          >
+            <Text style={styles.selectButtonText}>Mies</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity
+            style={[styles.selectButton, profile.gender === 'female' && styles.selected]}
+            onPress={() => setProfile({ ...profile, gender: 'female' })}
+          >
+            <Text style={styles.selectButtonText}>Nainen</Text>
+          </TouchableOpacity>
+        </View>
+
+        <Text style={styles.label}>Aktiivisuustaso</Text>
+        <View style={styles.row}>
+          <TouchableOpacity
+            style={[styles.selectButton, profile.activity === 1.2 && styles.selected]}
+            onPress={() => setProfile({ ...profile, activity: 1.2 })}
+          >
+            <Text style={styles.selectButtonText}>Vähän</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.selectButton, profile.activity === 1.55 && styles.selected]}
+            onPress={() => setProfile({ ...profile, activity: 1.55 })}
+          >
+            <Text style={styles.selectButtonText}>Normaali</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.selectButton, profile.activity === 1.8 && styles.selected]}
+            onPress={() => setProfile({ ...profile, activity: 1.8 })}
+          >
+            <Text style={styles.selectButtonText}>Aktiivinen</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.buttonContainer}>
+          <Button
+            title={loading ? "Päivitetään..." : "Tallenna muutokset"}
+            onPress={handleUpdateProfile}
+            disabled={loading}
+          />
+        </View>
+
+        <View style={styles.buttonContainer}> 
+          <Button
+            title="Kirjaudu ulos"
+            onPress={handleLogout}
+            color="red"
+          />
+        </View>
+      </ScrollView>
+      <BottomMenu />
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  screenContainer: {
     flex: 1,
-    padding: 20,
     backgroundColor: '#fff',
+  },
+  container: {
+    padding: 20,
+    paddingBottom: 120,
   },
   title: {
     fontSize: 24,
