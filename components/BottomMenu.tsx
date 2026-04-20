@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
 
 const BottomMenu = () => {
@@ -14,31 +15,36 @@ const BottomMenu = () => {
   ];
 
   return (
-    <View style={styles.bottomBar}>
-      {menuItems.map((item) => {
-        const active = route.name === item.name;
-        return (
-          <TouchableOpacity
-            key={item.name}
-            style={[styles.bottomItem, active && styles.activeItem]}
-            onPress={() => navigation.navigate(item.name)}
-          >
-            <Text style={[styles.bottomItemLabel, active && styles.activeLabel]}>
-              {item.label}
-            </Text>
-          </TouchableOpacity>
-        );
-      })}
-    </View>
+    <SafeAreaView edges={['bottom']} style={styles.safeArea}>
+      <View style={styles.bottomBar}>
+        {menuItems.map((item) => {
+          const active = route.name === item.name;
+          return (
+            <TouchableOpacity
+              key={item.name}
+              style={[styles.bottomItem, active && styles.activeItem]}
+              onPress={() => navigation.navigate(item.name)}
+            >
+              <Text style={[styles.bottomItemLabel, active && styles.activeLabel]}>
+                {item.label}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  bottomBar: {
+  safeArea: {
     position: 'absolute',
     left: 0,
     right: 0,
     bottom: 0,
+    backgroundColor: 'transparent',
+  },
+  bottomBar: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
