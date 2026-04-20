@@ -10,6 +10,7 @@ import RegisterScreen from './screens/RegisterScreen';
 import HomeScreen from './screens/HomeScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import AddFoodScreen from './screens/AddFoodScreen';
+import FoodDiaryScreen from './screens/FoodDiaryScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -34,6 +35,11 @@ export default function App() {
               name="Home"
               component={HomeScreen}
               options={{ title: 'KaloriPoliisi' }}
+            />
+            <Stack.Screen
+              name="FoodDiary"
+              component={FoodDiaryScreen}
+              options={{ title: 'Ruokapäiväkirja' }}
             />
             <Stack.Screen
               name="Profile"

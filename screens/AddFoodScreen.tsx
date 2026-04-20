@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { addDoc, collection } from 'firebase/firestore';
 import { auth, firestore } from '../firebase/Config';
+import BottomMenu from '../components/BottomMenu';
 
 const AddFoodScreen = ({ navigation }: any) => {
   const [name, setName] = useState('');
@@ -42,35 +43,38 @@ const AddFoodScreen = ({ navigation }: any) => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Lisää tuote</Text>
+    <View style={styles.screenContainer}>
+      <View style={styles.container}>
+        <Text style={styles.title}>Lisää tuote</Text>
 
-      <Text style={styles.label}>Tuotteen nimi</Text>
-      <TextInput
-        style={styles.input}
-        value={name}
-        onChangeText={setName}
-        placeholder="Esim. Banaani"
-      />
+        <Text style={styles.label}>Tuotteen nimi</Text>
+        <TextInput
+          style={styles.input}
+          value={name}
+          onChangeText={setName}
+          placeholder="Esim. Banaani"
+        />
 
-      <Text style={styles.label}>Kalorit</Text>
-      <TextInput
-        style={styles.input}
-        value={calories}
-        onChangeText={setCalories}
-        keyboardType="numeric"
-        placeholder="Esim. 100"
-      />
+        <Text style={styles.label}>Kalorit</Text>
+        <TextInput
+          style={styles.input}
+          value={calories}
+          onChangeText={setCalories}
+          keyboardType="numeric"
+          placeholder="Esim. 100"
+        />
 
-      <TouchableOpacity
-        style={styles.addButton}
-        onPress={handleAddFood}
-        disabled={loading}
-      >
-        <Text style={styles.addButtonText}>
-            {loading ? "Tallennetaan..." : "Lisää tuote"}
-        </Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={handleAddFood}
+          disabled={loading}
+        >
+          <Text style={styles.addButtonText}>
+              {loading ? "Tallennetaan..." : "Lisää tuote"}
+          </Text>
+        </TouchableOpacity>
+      </View>
+      <BottomMenu />
     </View>
   );
 };
@@ -78,10 +82,14 @@ const AddFoodScreen = ({ navigation }: any) => {
 export default AddFoodScreen;
 
 const styles = StyleSheet.create({
+  screenContainer: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#fff',
+    paddingBottom: 120,
   },
   title: {
     fontSize: 24,
