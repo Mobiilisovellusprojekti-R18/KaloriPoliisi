@@ -1,4 +1,3 @@
-import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -9,7 +8,7 @@ const BottomMenu = () => {
 
   const menuItems = [
     { name: 'Home', label: 'Koti' },
-    { name: 'AddFood', label: 'Lisää' },
+    { name: 'Stats', label: 'Tilastot' },
     { name: 'FoodDiary', label: 'Päiväkirja' },
     { name: 'Profile', label: 'Profiili' },
   ];

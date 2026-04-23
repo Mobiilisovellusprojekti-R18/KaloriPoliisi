@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { auth, firestore } from '../firebase/Config';
 import { collection, getDocs, orderBy, query, where, limit } from 'firebase/firestore';
 import { useFocusEffect } from '@react-navigation/native';
@@ -21,7 +21,7 @@ const formatDate = (dateString: string) => {
   });
 };
 
-const FoodDiaryScreen = () => {
+const FoodDiaryScreen = ({ navigation }: any) => {
   const [entries, setEntries] = useState<FoodEntry[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -118,6 +118,12 @@ const FoodDiaryScreen = () => {
           {renderDays()}
         </ScrollView>
       )}
+      <TouchableOpacity
+                    style={styles.addButton}
+                    onPress={() => navigation.navigate('AddFood')}
+                  >
+                    <Text style={styles.addButtonText}>Lisää tuote</Text>
+                  </TouchableOpacity>
       <BottomMenu />
     </View>
   );
@@ -152,6 +158,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 14,
     marginBottom: 12,
+    elevation: 2,
   },
   dayHeader: {
     flexDirection: 'row',
@@ -186,6 +193,27 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#666',
     textAlign: 'center',
+  },
+  addButton: {
+    backgroundColor: '#00C853',
+    paddingVertical: 18,
+    paddingHorizontal: 40,
+    borderRadius: 12,
+    marginBottom: 10,
+    marginTop: 20,
+    width: '90%',
+    alignSelf: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  addButtonText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 });
 
