@@ -11,6 +11,7 @@ import HomeScreen from './screens/HomeScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import AddFoodScreen from './screens/AddFoodScreen';
 import FoodDiaryScreen from './screens/FoodDiaryScreen';
+import StatsScreen from './screens/StatsScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -50,6 +51,11 @@ export default function App() {
               name="AddFood"
               component={AddFoodScreen}
               options={{ title: 'Lisää tuote' }}
+            />
+            <Stack.Screen 
+              name="Stats"
+              component={StatsScreen}
+              options={{ title: 'Tilastot' }} 
             />
           </>
         ) : (
