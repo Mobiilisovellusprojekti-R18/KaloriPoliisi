@@ -103,9 +103,9 @@ const AddFoodScreen = ({ navigation }: any) => {
       await addDoc(collection(firestore, 'dailyFoods'), {
         userId: auth.currentUser.uid,
         name: name.trim(),
-        calories: totalCalories,      // päivän kokonaiskalorit tästä annoksesta
-        caloriesPer100: kcal100Num,   // talteen vertailua varten
-        amount: amountNum,            // g/ml
+        calories: totalCalories,      
+        caloriesPer100: kcal100Num,   
+        amount: amountNum,            
         date: today,
         createdAt: new Date(),
       });
