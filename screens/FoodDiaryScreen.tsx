@@ -1,7 +1,24 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, ScrollView, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  ActivityIndicator,
+  TouchableOpacity,
+  Alert,
+} from 'react-native';
 import { auth, firestore } from '../firebase/Config';
-import { collection, getDocs, orderBy, query, where, limit } from 'firebase/firestore';
+import {
+  collection,
+  getDocs,
+  orderBy,
+  query,
+  where,
+  limit,
+  doc,
+  deleteDoc,
+} from 'firebase/firestore';
 import { useFocusEffect } from '@react-navigation/native';
 import BottomMenu from '../components/BottomMenu';
 
@@ -47,10 +64,10 @@ const FoodDiaryScreen = ({ navigation }: any) => {
 
           const snapshot = await getDocs(q);
           const loadedEntries: FoodEntry[] = snapshot.docs
-            .map((doc) => {
-              const data = doc.data();
+            .map((docSnap) => {
+              const data = docSnap.data();
               return {
-                id: doc.id,
+                id: docSnap.id,
                 name: data.name,
                 calories: data.calories,
                 date: data.date,
@@ -70,6 +87,29 @@ const FoodDiaryScreen = ({ navigation }: any) => {
       fetchEntries();
     }, [])
   );
+
+  const handleDeleteEntry = (entry: FoodEntry) => {
+    Alert.alert(
+      'Poista merkintä',
+      `Haluatko poistaa merkinnän: ${entry.name} (${entry.calories} kcal)?`,
+      [
+        { text: 'Peruuta', style: 'cancel' },
+        {
+          text: 'Poista',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await deleteDoc(doc(firestore, 'dailyFoods', entry.id));
+              setEntries((prev) => prev.filter((item) => item.id !== entry.id));
+            } catch (error) {
+              console.error('Virhe merkinnän poistossa:', error);
+              Alert.alert('Virhe', 'Merkinnän poistaminen epäonnistui.');
+            }
+          },
+        },
+      ]
+    );
+  };
 
   const groupedEntries = entries.reduce((groups: Record<string, FoodEntry[]>, entry) => {
     if (!groups[entry.date]) {
@@ -96,10 +136,20 @@ const FoodDiaryScreen = ({ navigation }: any) => {
             <Text style={styles.dayTitle}>{formatDate(date)}</Text>
             <Text style={styles.dayTotal}>{total} kcal</Text>
           </View>
+
           {dayEntries.map((item) => (
             <View key={item.id} style={styles.entryRow}>
-              <Text style={styles.entryName}>{item.name}</Text>
-              <Text style={styles.entryCalories}>{item.calories} kcal</Text>
+              <View style={styles.entryLeft}>
+                <Text style={styles.entryName}>{item.name}</Text>
+                <Text style={styles.entryCalories}>{item.calories} kcal</Text>
+              </View>
+
+              <TouchableOpacity
+                style={styles.deleteButton}
+                onPress={() => handleDeleteEntry(item)}
+              >
+                <Text style={styles.deleteButtonText}>Poista</Text>
+              </TouchableOpacity>
             </View>
           ))}
         </View>
@@ -110,6 +160,7 @@ const FoodDiaryScreen = ({ navigation }: any) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Ruokapäiväkirja</Text>
+
       {loading ? (
         <ActivityIndicator size="large" color="#00C853" style={styles.loader} />
       ) : (
@@ -118,12 +169,14 @@ const FoodDiaryScreen = ({ navigation }: any) => {
           {renderDays()}
         </ScrollView>
       )}
+
       <TouchableOpacity
-                    style={styles.addButton}
-                    onPress={() => navigation.navigate('AddFood')}
-                  >
-                    <Text style={styles.addButtonText}>Lisää tuote</Text>
-                  </TouchableOpacity>
+        style={styles.addButton}
+        onPress={() => navigation.navigate('AddFood')}
+      >
+        <Text style={styles.addButtonText}>Lisää tuote</Text>
+      </TouchableOpacity>
+
       <BottomMenu />
     </View>
   );
@@ -177,9 +230,14 @@ const styles = StyleSheet.create({
   entryRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
     paddingVertical: 8,
     borderBottomWidth: 1,
     borderBottomColor: '#ddd',
+  },
+  entryLeft: {
+    flex: 1,
+    paddingRight: 10,
   },
   entryName: {
     fontSize: 16,
@@ -187,6 +245,18 @@ const styles = StyleSheet.create({
   entryCalories: {
     fontSize: 16,
     fontWeight: 'bold',
+    marginTop: 2,
+  },
+  deleteButton: {
+    backgroundColor: '#ff4d4f',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 8,
+  },
+  deleteButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 13,
   },
   emptyText: {
     marginTop: 20,
